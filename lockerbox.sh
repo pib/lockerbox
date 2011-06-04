@@ -6,7 +6,6 @@ NODE_DOWNLOAD='http://nodejs.org/dist/node-v0.4.8.tar.gz'
 
 #### Setup
 
-PWD=`pwd`
 OK=true
 
 #### Helper functions
@@ -22,7 +21,6 @@ function check_for {
 }
 
 function download {
-    cd build
     base=`basename $1`
     if [ -f $base ]; then
         echo "$1 already downloaded." >&2
@@ -37,9 +35,24 @@ function download {
 }
 
 #### Main script
+BASEDIR=`pwd`
 
 check_for Git 'git --version'
 check_for Python 'python -V'
 
 mkdir -p build
+cd build
 download "$NODE_DOWNLOAD"
+echo -n "About to build node.js. This could take a while." >&2
+sleep 1; echo -n .; sleep 1; echo -n .; sleep 1; echo -n .; sleep 1
+if tar zxf "`basename \"$NODE_DOWNLOAD\"`" &&
+    cd `basename "$NODE_DOWNLOAD" .tar.gz` &&
+    ./configure --prefix="$BASEDIR" &&
+    make &&
+    make install
+then
+    echo "Installed node.js into $BASEDIR" >&2
+else
+    echo "Failed to install node.js into $BASEDIR" >&2
+fi
+cd ..
