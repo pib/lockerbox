@@ -54,7 +54,6 @@ check_for Python 'python -V' 2.6
 mkdir -p build
 cd build
 
-# TODO: check if node 0.4.8 or better is installed already. if so, don't download and build it
 check_for Node.js 'node -v' 0.4.8 optional
 
 if [ $? -ne 0 ]; then
