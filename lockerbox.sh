@@ -10,6 +10,7 @@ OK=true
 
 #### Helper functions
 
+# check_for name version_command [minimum_version [optional]]
 function check_for {
     version=`$2 2>&1 | grep -o [0-9.]*`
     if [ -z "$version" ]; then
@@ -17,6 +18,16 @@ function check_for {
         OK=false
     else
         echo "$1 version $version found." >&2
+    fi
+    if [ -n "$3" ]; then
+        if [ "$version" \< "$3" ]; then
+            echo "$1 version $3 or greater required!" >&2
+            if [ -z "$4" ]; then
+                exit 1
+            else
+                false
+            fi
+        fi
     fi
 }
 
@@ -38,24 +49,30 @@ function download {
 BASEDIR=`pwd`
 
 check_for Git 'git --version'
-check_for Python 'python -V'
+check_for Python 'python -V' 2.6
 
 mkdir -p build
 cd build
 
 # TODO: check if node 0.4.8 or better is installed already. if so, don't download and build it
-download "$NODE_DOWNLOAD"
-echo -n "About to build node.js. This could take a while." >&2
-sleep 1; echo -n .; sleep 1; echo -n .; sleep 1; echo -n .; sleep 1
-if tar zxf "`basename \"$NODE_DOWNLOAD\"`" &&
-    cd `basename "$NODE_DOWNLOAD" .tar.gz` &&
-    ./configure --prefix="$BASEDIR" &&
-    make &&
-    make install
-then
-    echo "Installed node.js into $BASEDIR" >&2
-else
-    echo "Failed to install node.js into $BASEDIR" >&2
-    exit 1
+check_for Node.js 'node -v' 0.4.8 optional
+
+if [ $? -ne 0 ]; then
+    echo "" >&2
+    echo "About to download, build, and install locally node.js." >&2
+    echo -n "This could take a while." >&2
+    sleep 1; echo -n .; sleep 1; echo -n .; sleep 1; echo -n .; sleep 1
+    download "$NODE_DOWNLOAD"
+    if tar zxf "`basename \"$NODE_DOWNLOAD\"`" &&
+        cd `basename "$NODE_DOWNLOAD" .tar.gz` &&
+        ./configure --prefix="$BASEDIR" &&
+        make &&
+        make install
+    then
+        echo "Installed node.js into $BASEDIR" >&2
+    else
+        echo "Failed to install node.js into $BASEDIR" >&2
+        exit 1
+    fi
 fi
 cd ..
