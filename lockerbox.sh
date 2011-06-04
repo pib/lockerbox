@@ -42,6 +42,8 @@ check_for Python 'python -V'
 
 mkdir -p build
 cd build
+
+# TODO: check if node 0.4.8 or better is installed already. if so, don't download and build it
 download "$NODE_DOWNLOAD"
 echo -n "About to build node.js. This could take a while." >&2
 sleep 1; echo -n .; sleep 1; echo -n .; sleep 1; echo -n .; sleep 1
