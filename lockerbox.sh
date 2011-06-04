@@ -29,7 +29,7 @@ function download {
             echo "Downloaded $1." >&2
         else
             echo "Download of $1 failed!" >&2
-            exit
+            exit 1
         fi
     fi
 }
@@ -56,5 +56,6 @@ then
     echo "Installed node.js into $BASEDIR" >&2
 else
     echo "Failed to install node.js into $BASEDIR" >&2
+    exit 1
 fi
 cd ..
