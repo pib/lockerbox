@@ -3,6 +3,8 @@
 #### Config
 
 NODE_DOWNLOAD='http://nodejs.org/dist/node-v0.4.8.tar.gz'
+NPM_DOWNLOAD='http://npmjs.org/install.sh'
+VIRTUALENV_DOWNLOAD='https://github.com/pypa/virtualenv/raw/develop/virtualenv.py'
 
 #### Setup
 
@@ -12,7 +14,7 @@ OK=true
 
 # check_for name version_command [minimum_version [optional]]
 function check_for {
-    version=`$2 2>&1 | grep -o [0-9.]*`
+    version=`$2 2>&1 | grep -o [-0-9.]*`
     if [ -z "$version" ]; then
         echo "$1 not found!" >&2
         OK=false
@@ -48,6 +50,11 @@ function download {
 #### Main script
 BASEDIR=`pwd`
 
+export PRE_LOCKERBOX_PATH=$PATH
+export PATH="$BASEDIR/bin":$PATH
+export PRE_LOCKERBOX_NODE_PATH=$NODE_PATH
+export NODE_PATH="$BASEDIR/lib":$NODE_PATH
+
 check_for Git 'git --version'
 check_for Python 'python -V' 2.6
 
@@ -74,4 +81,38 @@ if [ $? -ne 0 ]; then
         exit 1
     fi
 fi
+
+cd "$BASEDIR/build"
+check_for npm "npm -v" 1 optional
+
+if [ $? -ne 0 ]; then
+    echo "" >&2
+    echo "About to download and install locally npm." >&2
+    download "$NPM_DOWNLOAD" 
+    clean=no
+    if sh `basename $NPM_DOWNLOAD`; then
+        echo "Installed npm into $BASEDIR" >&2
+    else
+        echo "Failed to install npm into $BASEDIR" >&2
+        exit 1
+    fi
+fi
+
+check_for virtualenv "virtualenv --version" 1.4 optional
+
+if [ $? -ne 0 ]; then
+  echo "" >&2
+  echo "About to download virtualenv.py." >&2
+  download "$VIRTUALENV_DOWNLOAD"
+fi
+
+if find "$BASEDIR/bin/activate" >/dev/null || python -m virtualenv --no-site-packages "$BASEDIR" &&
+    source "$BASEDIR/bin/activate"
+then
+    echo "Set up virtual environment." >&2
+else
+    echo "Failed to set up virtual environment." >&2
+fi
+
 cd ..
+
