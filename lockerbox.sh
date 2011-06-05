@@ -50,6 +50,12 @@ function download {
 #### Main script
 BASEDIR=`pwd`
 
+if [ "$0" != "lockerbox.sh" -a "$1" != "lockerbox.sh" ]; then
+    BASEDIR="$BASEDIR/lockerbox"
+    mkdir "$BASEDIR"
+    cd "$BASEDIR"
+fi
+
 export PRE_LOCKERBOX_PATH=$PATH
 export PATH="$BASEDIR/bin":$PATH
 export PRE_LOCKERBOX_NODE_PATH=$NODE_PATH
@@ -106,7 +112,7 @@ if [ $? -ne 0 ]; then
   download "$VIRTUALENV_DOWNLOAD"
 fi
 
-if find "$BASEDIR/bin/activate" >/dev/null || python -m virtualenv --no-site-packages "$BASEDIR" &&
+if find "$BASEDIR/bin/activate" >/dev/null 2>&1 || python -m virtualenv --no-site-packages "$BASEDIR" &&
     source "$BASEDIR/bin/activate"
 then
     echo "Set up virtual environment." >&2
