@@ -5,6 +5,10 @@
 NODE_DOWNLOAD='http://nodejs.org/dist/node-v0.4.8.tar.gz'
 NPM_DOWNLOAD='http://npmjs.org/install.sh'
 VIRTUALENV_DOWNLOAD='http://github.com/pypa/virtualenv/raw/develop/virtualenv.py'
+MONGODB_DOWNLOAD='http://fastdl.mongodb.org/linux/mongodb-OS-ARCH-1.8.1.tgz'
+
+LOCKER_REPO='https://github.com/quartzjer/Locker.git'
+LOCKER_BRANCH='dev'
 
 #### Setup
 
@@ -14,7 +18,7 @@ OK=true
 
 # check_for name version_command [minimum_version [optional]]
 function check_for {
-    version=`$2 2>&1 | grep -o [-0-9.]*`
+    version=`$2 2>&1 | grep -o [-0-9.]* | head -n 1`
     if [ -z "$version" ]; then
         echo "$1 not found!" >&2
         OK=false
@@ -52,7 +56,7 @@ BASEDIR=`pwd`
 
 if [ "$0" != "lockerbox.sh" -a "$1" != "lockerbox.sh" ]; then
     BASEDIR="$BASEDIR/lockerbox"
-    mkdir "$BASEDIR"
+    mkdir -p "$BASEDIR"
     cd "$BASEDIR"
 fi
 
@@ -118,6 +122,36 @@ then
     echo "Set up virtual environment." >&2
 else
     echo "Failed to set up virtual environment." >&2
+fi
+
+check_for mongoDB "mongod --version" 1.9.1 optional
+
+if [ $? -ne 0 ]; then
+    OS=`uname -s`
+    case $OS in
+        Linux)
+            OS=linux
+            ;;
+        Darwin)
+            OS=osx
+            ;;
+        *)
+            echo "Don't recognize OS $OS" >&2
+            exit 1
+    esac
+    ARCH=`uname -p`
+    echo "" >&2
+    echo "Downloading and installing locally mongoDB" >&2
+    MONGODB_DOWNLOAD=`echo $MONGODB_DOWNLOAD | sed -e "s/OS/$OS/" -e "s/ARCH/$ARCH/"`
+    download $MONGODB_DOWNLOAD
+    if tar zxf `basename "$MONGODB_DOWNLOAD"` &&
+        cp `basename "$MONGODB_DOWNLOAD" .tgz`/bin/* "$BASEDIR/bin"
+    then
+        echo "Installed local mongoDB." >&2
+    else
+        echo "Failed to install local mongoDB." >&2
+        exit 1
+    fi
 fi
 
 cd "$BASEDIR"
