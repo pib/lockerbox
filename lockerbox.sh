@@ -4,7 +4,7 @@
 
 NODE_DOWNLOAD='http://nodejs.org/dist/node-v0.4.8.tar.gz'
 NPM_DOWNLOAD='http://npmjs.org/install.sh'
-VIRTUALENV_DOWNLOAD='https://github.com/pypa/virtualenv/raw/develop/virtualenv.py'
+VIRTUALENV_DOWNLOAD='http://github.com/pypa/virtualenv/raw/develop/virtualenv.py'
 
 #### Setup
 
@@ -120,5 +120,5 @@ else
     echo "Failed to set up virtual environment." >&2
 fi
 
-cd ..
+cd "$BASEDIR"
 
