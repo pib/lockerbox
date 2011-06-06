@@ -1,4 +1,4 @@
-= LockerBox =
+# LockerBox #
 
 LockerBox is a small script to get you up and running with
 [Locker](http://lockerproject.org/) as quickly and easily as possible,
@@ -9,7 +9,7 @@ At the moment, this is more intended for developers who want to
 evaluate Locker than end users. However, this could be a first step
 toward a system for building end-user packages of Locker.
 
-== Dependencies ==
+## Dependencies ##
 
 There are only three or four things that are needed in order to get
 Locker up and running using LockerBox:
@@ -43,7 +43,7 @@ Of course, if you already have recent enough versions of Node.js, npm,
 virtualenv, and MongoDB installed, they won't be re-installed
 locally. Instead, the already-installed versions will be used.
 
-== Usage ==
+## Usage ##
 
 Just run:
 
@@ -65,7 +65,7 @@ Locker.
 The next time you run lockerbox.sh, it won't need to install anything,
 it will just check that it's all there, and then launch Locker.
 
-== And then? ==
+## And then? ##
 
 At this point, you should have a copy of Locker in
 lockerbox/Locker. Now start hacking away!
