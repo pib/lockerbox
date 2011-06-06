@@ -156,7 +156,13 @@ fi
 cd "$BASEDIR"
 
 if [ ! -d Locker/.git ]; then
-    git clone "$LOCKER_REPO" -b "$LOCKER_BRANCH"
+    echo "Checking out Locker repo." >&2
+    if git clone "$LOCKER_REPO" -b "$LOCKER_BRANCH"; then
+        echo "Checked out Locker repo." >&2
+    else
+        echo "Failed to check out Locker repo." >&2
+        exit 1
+    fi
 fi
 cd Locker
 npm install
