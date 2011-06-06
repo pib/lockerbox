@@ -61,15 +61,15 @@ if [ "$0" != "./lockerbox.sh" -a "$1" != "lockerbox.sh" ]; then
 fi
 
 export PRE_LOCKERBOX_PATH=$PATH
-export PATH="$BASEDIR/bin":$PATH
+export PATH="$BASEDIR/local/bin":$PATH
 export PRE_LOCKERBOX_NODE_PATH=$NODE_PATH
-export NODE_PATH="$BASEDIR/lib":$NODE_PATH
+export NODE_PATH="$BASEDIR/local/lib":$NODE_PATH
 
 check_for Git 'git --version'
 check_for Python 'python -V' 2.6
 
-mkdir -p build
-cd build
+mkdir -p local/build
+cd local/build
 
 check_for Node.js 'node -v' 0.4.8 optional
 
@@ -81,7 +81,7 @@ if [ $? -ne 0 ]; then
     download "$NODE_DOWNLOAD"
     if tar zxf "`basename \"$NODE_DOWNLOAD\"`" &&
         cd `basename "$NODE_DOWNLOAD" .tar.gz` &&
-        ./configure --prefix="$BASEDIR" &&
+        ./configure --prefix="$BASEDIR/local" &&
         make &&
         make install
     then
@@ -92,7 +92,7 @@ if [ $? -ne 0 ]; then
     fi
 fi
 
-cd "$BASEDIR/build"
+cd "$BASEDIR/local/build"
 check_for npm "npm -v" 1 optional
 
 if [ $? -ne 0 ]; then
@@ -115,8 +115,8 @@ if [ $? -ne 0 ]; then
   download "$VIRTUALENV_DOWNLOAD"
 fi
 
-if find "$BASEDIR/bin/activate" >/dev/null 2>&1 || python -m virtualenv --no-site-packages "$BASEDIR" &&
-    source "$BASEDIR/bin/activate"
+if find "$BASEDIR/bin/activate" >/dev/null 2>&1 || python -m virtualenv --no-site-packages "$BASEDIR/local" &&
+    source "$BASEDIR/local/bin/activate"
 then
     echo "Set up virtual environment." >&2
 else
@@ -144,7 +144,7 @@ if [ $? -ne 0 ]; then
     MONGODB_DOWNLOAD=`echo $MONGODB_DOWNLOAD | sed -e "s/OS/$OS/" -e "s/ARCH/$ARCH/"`
     download $MONGODB_DOWNLOAD
     if tar zxf `basename "$MONGODB_DOWNLOAD"` &&
-        cp `basename "$MONGODB_DOWNLOAD" .tgz`/bin/* "$BASEDIR/bin"
+        cp `basename "$MONGODB_DOWNLOAD" .tgz`/bin/* "$BASEDIR/local/bin"
     then
         echo "Installed local mongoDB." >&2
     else
