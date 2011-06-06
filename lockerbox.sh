@@ -54,7 +54,7 @@ function download {
 #### Main script
 BASEDIR=`pwd`
 
-if [ "$0" != "lockerbox.sh" -a "$1" != "lockerbox.sh" ]; then
+if [ "$0" != "./lockerbox.sh" -a "$1" != "lockerbox.sh" ]; then
     BASEDIR="$BASEDIR/lockerbox"
     mkdir -p "$BASEDIR"
     cd "$BASEDIR"
@@ -99,8 +99,7 @@ if [ $? -ne 0 ]; then
     echo "" >&2
     echo "About to download and install locally npm." >&2
     download "$NPM_DOWNLOAD" 
-    clean=no
-    if sh `basename $NPM_DOWNLOAD`; then
+    if cat `basename $NPM_DOWNLOAD` | clean=no sh; then
         echo "Installed npm into $BASEDIR" >&2
     else
         echo "Failed to install npm into $BASEDIR" >&2
@@ -108,7 +107,7 @@ if [ $? -ne 0 ]; then
     fi
 fi
 
-check_for virtualenv "virtualenv --version" 1.4 optional
+check_for virtualenv "python -m virtualenv --version" 1.4 optional
 
 if [ $? -ne 0 ]; then
   echo "" >&2
@@ -124,7 +123,7 @@ else
     echo "Failed to set up virtual environment." >&2
 fi
 
-check_for mongoDB "mongod --version" 1.9.1 optional
+check_for mongoDB "mongod --version" 1.8.1 optional
 
 if [ $? -ne 0 ]; then
     OS=`uname -s`
@@ -139,7 +138,7 @@ if [ $? -ne 0 ]; then
             echo "Don't recognize OS $OS" >&2
             exit 1
     esac
-    ARCH=`uname -p`
+    ARCH=`uname -m`
     echo "" >&2
     echo "Downloading and installing locally mongoDB" >&2
     MONGODB_DOWNLOAD=`echo $MONGODB_DOWNLOAD | sed -e "s/OS/$OS/" -e "s/ARCH/$ARCH/"`
@@ -156,3 +155,10 @@ fi
 
 cd "$BASEDIR"
 
+if [ ! -d Locker/.git ]; then
+    git clone "$LOCKER_REPO" -b "$LOCKER_BRANCH"
+fi
+cd Locker
+npm install
+python setupEnv.py
+node lockerd.js
