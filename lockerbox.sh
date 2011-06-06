@@ -14,13 +14,15 @@ LOCKER_BRANCH='dev'
 
 # check_for name exec_name version_command [minimum_version [optional]]
 function check_for {
-    OK=true
+    found=`which $2`
     version=`$3 2>&1 | grep -o "[-0-9.]*" | head -n 1`
-    if [ -z `which $2` ]; then
+    if [ -z "$found" ]; then
         echo "$1 not found!" >&2
-        OK=false
     else
         echo "$1 version $version found." >&2
+        if [ -z "$4" ]; then
+            return
+        fi
     fi
     if [ -n "$4" ]; then
         if [ "$version" \< "$4" ]; then
@@ -28,12 +30,10 @@ function check_for {
             if [ -z "$5" ]; then
                 exit 1
             else
-                OK=true
                 false
             fi
         fi
-    fi
-    if ! $OK; then
+    else
         exit 1
     fi
 }
@@ -110,7 +110,7 @@ if [ $? -ne 0 ]; then
     fi
 fi
 
-if ! find "$BASEDIR/local/bin/activate" >/dev/null; then
+if ! find "$BASEDIR/local/bin/activate" >/dev/null 2>&1; then
     check_for virtualenv virtualenv "virtualenv --version" 1.4 optional
 
     if [ $? -ne 0 ]; then
