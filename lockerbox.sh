@@ -10,30 +10,31 @@ MONGODB_DOWNLOAD='http://fastdl.mongodb.org/linux/mongodb-OS-ARCH-1.8.1.tgz'
 LOCKER_REPO='https://github.com/quartzjer/Locker.git'
 LOCKER_BRANCH='dev'
 
-#### Setup
-
-OK=true
-
 #### Helper functions
 
-# check_for name version_command [minimum_version [optional]]
+# check_for name exec_name version_command [minimum_version [optional]]
 function check_for {
-    version=`$2 2>&1 | grep -o [-0-9.]* | head -n 1`
-    if [ -z "$version" ]; then
+    OK=true
+    version=`$3 2>&1 | grep -o "[-0-9.]*" | head -n 1`
+    if [ -z `which $2` ]; then
         echo "$1 not found!" >&2
         OK=false
     else
         echo "$1 version $version found." >&2
     fi
-    if [ -n "$3" ]; then
-        if [ "$version" \< "$3" ]; then
-            echo "$1 version $3 or greater required!" >&2
-            if [ -z "$4" ]; then
+    if [ -n "$4" ]; then
+        if [ "$version" \< "$4" ]; then
+            echo "$1 version $4 or greater required!" >&2
+            if [ -z "$5" ]; then
                 exit 1
             else
+                OK=true
                 false
             fi
         fi
+    fi
+    if ! $OK; then
+        exit 1
     fi
 }
 
@@ -60,18 +61,20 @@ if [ "$0" != "./lockerbox.sh" -a "$1" != "lockerbox.sh" ]; then
     cd "$BASEDIR"
 fi
 
+export PYEXE=`which python`
+
 export PRE_LOCKERBOX_PATH=$PATH
 export PATH="$BASEDIR/local/bin":$PATH
 export PRE_LOCKERBOX_NODE_PATH=$NODE_PATH
 export NODE_PATH="$BASEDIR/local/lib":$NODE_PATH
 
-check_for Git 'git --version'
-check_for Python 'python -V' 2.6
+check_for Git git 'git --version'
+check_for Python python 'python -V' 2.6
 
 mkdir -p local/build
 cd local/build
 
-check_for Node.js 'node -v' 0.4.8 optional
+check_for Node.js node 'node -v' 0.4.8 optional
 
 if [ $? -ne 0 ]; then
     echo "" >&2
@@ -93,7 +96,7 @@ if [ $? -ne 0 ]; then
 fi
 
 cd "$BASEDIR/local/build"
-check_for npm "npm -v" 1 optional
+check_for npm npm "npm -v" 1 optional
 
 if [ $? -ne 0 ]; then
     echo "" >&2
@@ -107,23 +110,28 @@ if [ $? -ne 0 ]; then
     fi
 fi
 
-check_for virtualenv "python -m virtualenv --version" 1.4 optional
+if ! find "$BASEDIR/local/bin/activate" >/dev/null; then
+    check_for virtualenv virtualenv "virtualenv --version" 1.4 optional
 
-if [ $? -ne 0 ]; then
-  echo "" >&2
-  echo "About to download virtualenv.py." >&2
-  download "$VIRTUALENV_DOWNLOAD"
+    if [ $? -ne 0 ]; then
+        echo "" >&2
+        echo "About to download virtualenv.py." >&2
+        download "$VIRTUALENV_DOWNLOAD"
+    fi
+    if $PYEXE -m virtualenv --no-site-packages "$BASEDIR/local"; then
+        echo "Set up virtual Python environment." >&2
+    else
+        echo "Failed to set up virtual Python environment." >&2
+    fi
 fi
 
-if find "$BASEDIR/bin/activate" >/dev/null 2>&1 || python -m virtualenv --no-site-packages "$BASEDIR/local" &&
-    source "$BASEDIR/local/bin/activate"
-then
-    echo "Set up virtual environment." >&2
+if source "$BASEDIR/local/bin/activate"; then
+    echo "Activated virtual Python environment." >&2
 else
-    echo "Failed to set up virtual environment." >&2
+    echo "Failed to activate virtual Python environment." >&2
 fi
 
-check_for mongoDB "mongod --version" 1.8.1 optional
+check_for mongoDB mongod "mongod --version" 1.8.1 optional
 
 if [ $? -ne 0 ]; then
     OS=`uname -s`
