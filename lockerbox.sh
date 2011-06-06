@@ -5,7 +5,8 @@
 NODE_DOWNLOAD='http://nodejs.org/dist/node-v0.4.8.tar.gz'
 NPM_DOWNLOAD='http://npmjs.org/install.sh'
 VIRTUALENV_DOWNLOAD='http://github.com/pypa/virtualenv/raw/develop/virtualenv.py'
-MONGODB_DOWNLOAD='http://fastdl.mongodb.org/linux/mongodb-OS-ARCH-1.8.1.tgz'
+MONGODB_DOWNLOAD='http://fastdl.mongodb.org/OS/mongodb-OS-ARCH-1.8.1.tgz'
+LOCKERBOX_DOWNLOAD='http://github.com/pib/lockerbox/blob/master/lockerbox.sh'
 
 LOCKER_REPO='https://github.com/quartzjer/Locker.git'
 LOCKER_BRANCH='dev'
@@ -43,7 +44,7 @@ function download {
     if [ -f $base ]; then
         echo "$1 already downloaded." >&2
     else
-        if wget "$1" || curl -o $base "$1"; then
+        if wget "$1" || curl -L -o $base "$1"; then
             echo "Downloaded $1." >&2
         else
             echo "Download of $1 failed!" >&2
@@ -56,9 +57,10 @@ function download {
 BASEDIR=`pwd`
 
 if [ "$0" != "./lockerbox.sh" -a "$1" != "lockerbox.sh" ]; then
-    BASEDIR="$BASEDIR/lockerbox"
-    mkdir -p "$BASEDIR"
-    cd "$BASEDIR"
+    mkdir -p "$BASEDIR/lockerbox"
+    cd "$BASEDIR/lockerbox"
+    download "$LOCKERBOX_DOWNLOAD"
+    exec ./lockerbox.sh
 fi
 
 export PYEXE=`which python`
@@ -149,7 +151,7 @@ if [ $? -ne 0 ]; then
     ARCH=`uname -m`
     echo "" >&2
     echo "Downloading and installing locally mongoDB" >&2
-    MONGODB_DOWNLOAD=`echo $MONGODB_DOWNLOAD | sed -e "s/OS/$OS/" -e "s/ARCH/$ARCH/"`
+    MONGODB_DOWNLOAD=`echo $MONGODB_DOWNLOAD | sed -e "s/OS/$OS/g" -e "s/ARCH/$ARCH/g"`
     download $MONGODB_DOWNLOAD
     if tar zxf `basename "$MONGODB_DOWNLOAD"` &&
         cp `basename "$MONGODB_DOWNLOAD" .tgz`/bin/* "$BASEDIR/local/bin"
