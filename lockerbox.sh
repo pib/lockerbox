@@ -8,7 +8,7 @@ VIRTUALENV_DOWNLOAD='http://github.com/pypa/virtualenv/raw/develop/virtualenv.py
 MONGODB_DOWNLOAD='http://fastdl.mongodb.org/OS/mongodb-OS-ARCH-1.8.1.tgz'
 LOCKERBOX_DOWNLOAD='http://github.com/pib/lockerbox/blob/master/lockerbox.sh'
 
-LOCKER_REPO='https://github.com/quartzjer/Locker.git'
+LOCKER_REPO='https://github.com/LockerProject/Locker.git'
 LOCKER_BRANCH='master'
 
 #### Helper functions
