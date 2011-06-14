@@ -16,7 +16,7 @@ LOCKER_BRANCH='master'
 # check_for name exec_name version_command [minimum_version [optional]]
 function check_for {
     found=`which $2`
-    version=`$3 2>&1 | grep -o "[-0-9.]*" | head -n 1`
+    version=`$3 2>&1 | grep -o -E [-0-9.]\{1,\} | head -n 1`
     if [ -z "$found" ]; then
         echo "$1 not found!" >&2
     else
