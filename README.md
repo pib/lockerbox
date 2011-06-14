@@ -51,7 +51,7 @@ Just run:
 
 Or if you don't want to download first:
 
-    curl http://github.com/pib/lockerbox/blob/master/lockerbox.sh | sh
+    curl https://raw.github.com/pib/lockerbox/master/lockerbox.sh | sh
 
 The second option will create a directory called "lockerbox" and put
 everything there. The first will run in the current directory (which
