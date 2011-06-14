@@ -6,7 +6,7 @@ NODE_DOWNLOAD='http://nodejs.org/dist/node-v0.4.8.tar.gz'
 NPM_DOWNLOAD='http://npmjs.org/install.sh'
 VIRTUALENV_DOWNLOAD='http://github.com/pypa/virtualenv/raw/develop/virtualenv.py'
 MONGODB_DOWNLOAD='http://fastdl.mongodb.org/OS/mongodb-OS-ARCH-1.8.1.tgz'
-LOCKERBOX_DOWNLOAD='http://github.com/pib/lockerbox/blob/master/lockerbox.sh'
+LOCKERBOX_DOWNLOAD='https://raw.github.com/pib/lockerbox/master/lockerbox.sh'
 
 LOCKER_REPO='https://github.com/LockerProject/Locker.git'
 LOCKER_BRANCH='master'
@@ -41,10 +41,11 @@ function check_for {
 
 function download {
     base=`basename $1`
+    echo $base
     if [ -f $base ]; then
         echo "$1 already downloaded." >&2
     else
-        if wget "$1" || curl -L -o $base "$1"; then
+        if wget "$1" 2>/dev/null || curl -L -o $base "$1"; then
             echo "Downloaded $1." >&2
         else
             echo "Download of $1 failed!" >&2
@@ -56,10 +57,12 @@ function download {
 #### Main script
 BASEDIR=`pwd`
 
+echo $0 $1
 if [ "$0" != "./lockerbox.sh" -a "$1" != "lockerbox.sh" ]; then
     mkdir -p "$BASEDIR/lockerbox"
     cd "$BASEDIR/lockerbox"
     download "$LOCKERBOX_DOWNLOAD"
+    chmod 755 lockerbox.sh
     exec ./lockerbox.sh
 fi
 
@@ -68,7 +71,7 @@ export PYEXE=`which python`
 export PRE_LOCKERBOX_PATH=$PATH
 export PATH="$BASEDIR/local/bin":$PATH
 export PRE_LOCKERBOX_NODE_PATH=$NODE_PATH
-export NODE_PATH="$BASEDIR/local/lib":$NODE_PATH
+export NODE_PATH="$BASEDIR/local/lib/node_modules":$NODE_PATH
 
 check_for Git git 'git --version'
 check_for Python python 'python -V' 2.6
