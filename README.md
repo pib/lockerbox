@@ -20,7 +20,8 @@ Locker up and running using LockerBox:
 
  - A C++ build environment (Make, a C++ compiler, and libssl)
 
- - Node.js 0.4.8 (optional)
+ - Node.js v0.4.6+ (optional)
+ 
 
 If you don't already have Node.js 0.4.8+ installed, it will be built
 for you, and installed in the lockerbox directory. How long this takes

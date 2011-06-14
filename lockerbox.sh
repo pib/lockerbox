@@ -78,7 +78,7 @@ check_for Python python 'python -V' 2.6
 mkdir -p local/build
 cd local/build
 
-check_for Node.js node 'node -v' 0.4.8 optional
+check_for Node.js node 'node -v' 0.4.6 optional
 
 if [ $? -ne 0 ]; then
     echo "" >&2
@@ -135,7 +135,7 @@ else
     echo "Failed to activate virtual Python environment." >&2
 fi
 
-check_for mongoDB mongod "mongod --version" 1.8.1 optional
+check_for mongoDB mongod "mongod --version" 1.4.0 optional
 
 if [ $? -ne 0 ]; then
     OS=`uname -s`
