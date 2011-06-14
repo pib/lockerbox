@@ -41,7 +41,6 @@ function check_for {
 
 function download {
     base=`basename $1`
-    echo $base
     if [ -f $base ]; then
         echo "$1 already downloaded." >&2
     else
@@ -57,8 +56,8 @@ function download {
 #### Main script
 BASEDIR=`pwd`
 
-echo $0 $1
-if [ "$0" != "./lockerbox.sh" -a "$1" != "lockerbox.sh" ]; then
+THIS=`basename $0`
+if [ "$THIS" != "lockerbox.sh" -a "$1" != "lockerbox.sh" ]; then
     mkdir -p "$BASEDIR/lockerbox"
     cd "$BASEDIR/lockerbox"
     download "$LOCKERBOX_DOWNLOAD"
