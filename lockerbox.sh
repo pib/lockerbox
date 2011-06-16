@@ -150,7 +150,11 @@ if [ $? -ne 0 ]; then
             echo "Don't recognize OS $OS" >&2
             exit 1
     esac
-    ARCH=`uname -m`
+    BITS=`getconf LONG_BIT`
+    ARCH='x86_64'
+    if [ $BITS -ne 64 ]; then
+        ARCH="i386"
+    fi
     echo "" >&2
     echo "Downloading and installing locally mongoDB" >&2
     MONGODB_DOWNLOAD=`echo $MONGODB_DOWNLOAD | sed -e "s/OS/$OS/g" -e "s/ARCH/$ARCH/g"`
