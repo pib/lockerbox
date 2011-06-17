@@ -154,6 +154,9 @@ if [ $? -ne 0 ]; then
     ARCH='x86_64'
     if [ $BITS -ne 64 ]; then
         ARCH="i386"
+        if [ "$OS" != "osx" ]; then
+            ARCH="i686"
+        fi
     fi
     echo "" >&2
     echo "Downloading and installing locally mongoDB" >&2
